@@ -15,4 +15,26 @@ describe('registration', () => {
       .should('be.a', 'string')
     cy.findByTestId('username-display').should('have.text', user.username)
   })
+
+  it("should show an error message if there's an error registering", () => {
+    cy.intercept(
+      {
+        method: 'POST',
+        url: 'http://localhost:3000/register',
+      },
+      {
+        statusCode: 500,
+        body: {},
+        headers: {'access-control-allow-origin': '*'},
+      },
+    ).as('register')
+
+    cy.visit('/register')
+    cy.findByText(/submit/i).click()
+
+    cy.wait('@register')
+      .its('response.statusCode')
+      .should('be.oneOf', [500])
+    cy.findByText(/error.*try again/i)
+  })
 })
