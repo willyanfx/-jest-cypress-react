@@ -8,7 +8,7 @@ describe('login', () => {
       cy.findByLabelText(/password/i).type(user.password)
       cy.findByText(/submit/i).click()
 
-      cy.url().should('eq', `${Cypress.config().baseUrl}/`)
+      cy.assetHome()
       cy.window()
         .its('localStorage.token')
         .should('be.a', 'string')
