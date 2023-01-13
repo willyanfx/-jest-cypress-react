@@ -38,9 +38,22 @@ Cypress.Commands.add('assetHome', () => {
   cy.url().should('eq', `${Cypress.config().baseUrl}/`)
 })
 
+Cypress.Commands.add('login', user => {
+  cy.request('POST', 'http://localhost:3000/login', user).then(response => {
+    window.localStorage.setItem('token', response.body.user.token)
+    return {...response.body.user, ...user}
+  })
+})
+
 Cypress.Commands.add('assertLoggedInAs', user => {
   cy.window()
     .its('localStorage.token')
     .should('be.a', 'string')
   cy.findByTestId('username-display').should('have.text', user)
+})
+
+Cypress.Commands.add('loginAsNewUser', () => {
+  cy.createUser().then(user => {
+    cy.login(user)
+  })
 })
